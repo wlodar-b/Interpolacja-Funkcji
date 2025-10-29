@@ -1,18 +1,18 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import os  # potrzebne do pracy ze ścieżkami
+import os
 from utils import generate_points, interpolate, mse, h1, h3, h4
 
 # Parametry
-N = 100  # liczba punktów początkowych
+N = 100
 x_min, x_max = -np.pi, np.pi
-multipliers = [2, 4, 10]  # ile razy zwiększamy liczbę punktów
-kernels = [h1, h3, h4]  # wybrane jądra konwolucji
+multipliers = [2, 4, 10]
+kernels = [h1, h3, h4]
 kernel_names = ["h1", "h3", "h4"]
 
-# 🔹 Ścieżka do folderu, w którym mają być zapisywane wykresy
-output_dir = r"C:\Users\wloda\Desktop\sioc\sioc\images"
-os.makedirs(output_dir, exist_ok=True)  # utworzy folder jeśli nie istnieje
+# Folder na wykresy (na razie nieużywany)
+# output_dir = r"C:\Users\wloda\Desktop\sioc\sioc\images"
+# os.makedirs(output_dir, exist_ok=True)
 
 # Funkcja do interpolacji
 def f1(x):
@@ -22,34 +22,39 @@ def f1(x):
 x_orig = generate_points(N, x_min, x_max, distribution="uniform")
 y_orig = f1(x_orig)
 
-# Wykres oryginalnych punktów
-plt.figure(figsize=(12, 6))
-plt.plot(x_orig, y_orig, 'o', label='Oryginalne punkty', markersize=5)
+# 🔹 Iteracja po jądrach konwolucji
+for kernel, kname in zip(kernels, kernel_names):
+    plt.figure(figsize=(12, 6))
 
-# Interpolacja
-for multiplier in multipliers:
-    x_new = np.linspace(x_min, x_max, N * multiplier)
+    # Rysowanie oryginalnych punktów
+    plt.plot(x_orig, y_orig, 'o', label='Oryginalne punkty', markersize=5, color='black')
 
-    for kernel, kname in zip(kernels, kernel_names):
+    # 🔹 Interpolacja dla różnych multiplikatorów
+    for multiplier in multipliers:
+        x_new = np.linspace(x_min, x_max, N * multiplier)
         y_new = interpolate(x_orig, y_orig, x_new, kernel)
         y_true = f1(x_new)
         error = mse(y_true, y_new)
 
-        print(f"Multiplikator: {multiplier}x, Jądro: {kname}, MSE: {error:.6f}")
-        plt.plot(x_new, y_new, label=f'{kname}, {multiplier}x')
+        # Wypisanie błędu
+        print(f"Jądro: {kname}, multiplikator: {multiplier}x, MSE: {error:.6f}")
 
-# Wykończenie wykresu
-plt.title('Interpolacja funkcji f1(x) = sin(x)')
-plt.xlabel('x')
-plt.ylabel('y')
-plt.legend()
-plt.grid(True)
+        # Rysowanie interpolacji
+        plt.plot(x_new, y_new, label=f'{multiplier}x (MSE={error:.6f})')
 
-# 🔹 Zapis wykresu do folderu
-save_path = os.path.join(output_dir, "f1_plot.png")  # pełna ścieżka do pliku
-plt.savefig(save_path, dpi=300, bbox_inches='tight')  # zapis z wysoką jakością
+    # 🔹 Formatowanie wykresu
+    plt.title(f'Interpolacja f1(x) = sin(x) z użyciem jądra {kname}')
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.legend()
+    plt.grid(True)
 
-# Wyświetlenie wykresu
-plt.show()
+    # 🔹 Zapis wykresu (na razie wyłączony)
+    # save_path = os.path.join(output_dir, f"f1_{kname}.png")
+    # plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    # plt.close()
 
-print(f"Wykres zapisano w: {save_path}")
+    # 🔹 Pokazanie wykresu (aktywnie działa)
+    plt.show()
+
+    print(f"✅ Wykres dla jądra {kname} został wygenerowany.")
