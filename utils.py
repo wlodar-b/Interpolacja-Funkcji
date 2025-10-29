@@ -5,7 +5,10 @@ import numpy as np
 def generate_points(N, x_min, x_max, distribution="uniform"):
     """
     Generuje N punktów w przedziale [x_min, x_max].
-    distribution: "uniform" - równomiernie, "normal" - rozkład normalny
+    distribution:
+        "uniform"  - równomiernie
+        "normal"   - rozkład normalny
+        "nonuniform" - gęstsze punkty w centrum przedziału
     """
     if distribution == "uniform":
         return np.linspace(x_min, x_max, N)
@@ -14,6 +17,11 @@ def generate_points(N, x_min, x_max, distribution="uniform"):
         sigma = (x_max - x_min) / 6  # większość punktów w [x_min, x_max]
         points = np.random.normal(mu, sigma, N)
         return np.clip(points, x_min, x_max)
+    elif distribution == "nonuniform":
+        # przykładowy nierównomierny rozkład: więcej punktów w centrum
+        t = np.linspace(0, 1, N)
+        t = 0.5 - 0.5 * np.cos(np.pi * t)  # gęstsze punkty w środku (rozkład cosinusowy)
+        return x_min + t * (x_max - x_min)
     else:
         raise ValueError("Nieobsługiwany typ rozkładu")
 
