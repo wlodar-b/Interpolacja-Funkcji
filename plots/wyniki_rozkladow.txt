@@ -1,4 +1,4 @@
 Porównanie b³êdów MSE dla ró¿nych rozmieszczeñ punktów:
 Rownomierne: 0.000001
-Losowe (jednostajny): 0.001804
-Losowe (normalny): 0.241427
+Losowe (jednostajny): 0.000364
+Losowe (normalny): 0.237145
